@@ -1,4 +1,4 @@
-illuminepixels.io:80 {
+illuminepixels.io {
 
     proxy / appserver:8090 {
         header_upstream Host {host}

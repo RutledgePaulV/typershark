@@ -10,7 +10,9 @@
 
 
 (defn default-mw [handler]
-  (defaults/wrap-defaults handler defaults/site-defaults))
+  (defaults/wrap-defaults handler
+    (-> defaults/secure-site-defaults
+        (assoc-in [:security :ssl-redirect] false))))
 
 (defn json-mw [handler]
   (-> handler (rj/wrap-json-body) (rj/wrap-json-params) (rj/wrap-json-response)))
