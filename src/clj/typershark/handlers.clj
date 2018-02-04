@@ -1,7 +1,19 @@
 (ns typershark.handlers
-  (:require [org.httpkit.server :as server]))
+  (:require [chord.http-kit :refer [with-channel]]
+            [clojure.core.async :as async]
+            [clojure.data :as data]))
 
 (defonce CLIENTS (atom #{}))
+
+(defn broadcast!
+  ([msg] (broadcast! msg @CLIENTS))
+  ([msg channels] (dorun (pmap #(async/put! % msg) channels))))
+
+(add-watch CLIENTS "peer-events"
+  (fn [k r o n]
+    (let [[added removed] (data/diff n o)]
+      (doseq [peer added] (broadcast! {:peer-added true} (disj n peer)))
+      (doseq [peer removed] (broadcast! {:peer-removed true} (disj n peer))))))
 
 (defmulti handle-event :kind)
 
@@ -9,14 +21,18 @@
   (println "Received event" event)
   {:ack true})
 
+(defn register! [request channel]
+  (swap! CLIENTS conj channel))
+
+(defn deregister! [request channel]
+  (swap! CLIENTS disj channel))
+
 (defn connect! [request]
-  (let [params nil]
-    (server/with-channel request channel
-      (server/on-close channel
-        (fn [status]
-          (swap! CLIENTS disj channel)))
-      (server/on-receive channel
-        (fn [data]
-          (swap! CLIENTS conj channel)
-          (when-some [response (handle-event data)]
-            (server/send! channel response)))))))
+  (with-channel request channel
+    (async/go-loop []
+      (if-some [message (async/<! channel)]
+        (do
+          (register! request channel)
+          (async/<! (async/thread (handle-event message)))
+          (recur))
+        (deregister! request channel)))))

@@ -23,7 +23,7 @@
           (println "Channel was closed."))))))
 
 
-(defonce game (play/create-game 500 500))
+(defonce game (play/create-game 500 500 {:debug? false}))
 
 (defn title-text []
   [[:fill {:color "lightblue"} [:rect {:x 0 :y 0 :width 500 :height 500}]]
@@ -36,6 +36,10 @@
     (on-render [this]
       (play/render game
         (title-text)))))
+
+
+(start-event-loop
+  (new-connection))
 
 (doto game
   (play/start)
