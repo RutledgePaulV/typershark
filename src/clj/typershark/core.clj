@@ -5,23 +5,55 @@
             [compojure.route :refer :all]
             [ring.middleware.defaults :as defaults]
             [org.httpkit.server :as server]
-            [ring.util.response :as response]))
+            [ring.middleware.json :as rj]
+            [typershark.middleware :as mw]))
 
 
-(defroutes application
+(defn default-mw [handler]
+  (defaults/wrap-defaults handler defaults/site-defaults))
+
+(defn json-mw [handler]
+  (-> handler (rj/wrap-json-body) (rj/wrap-json-params) (rj/wrap-json-response)))
+
+
+(defroutes unauthenticated
+
+  (GET "/login" request
+    (pages/login-page))
+
+  (GET "/healthz" request
+    {:body    "{\"healthy\": true}"
+     :headers {"content-type" "application/json"}})
+
+  (resources "/"))
+
+
+(defroutes authenticated
 
   (GET "/" request
     (pages/index-page))
 
-  (GET "/ws" request
-    (handlers/connect! request))
+  (GET "/ws" [game :as request]
+    (handlers/connect! request game))
 
-  (resources "/")
+  (->
+    (routes
+      (GET "/games" request
+        {:body (handlers/get-games)})
 
-  (response/not-found "Not found!"))
+      (POST "/games" request
+        {:body (handlers/new-game!)}))
+    (json-mw)))
 
-(defn default-mw [handler]
-  (defaults/wrap-defaults handler defaults/site-defaults))
+
+(defroutes application
+
+  unauthenticated
+
+  (->
+    authenticated
+    (mw/wrap-authentication)))
+
 
 (alter-var-root #'application default-mw)
 

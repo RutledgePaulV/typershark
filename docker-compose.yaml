@@ -1,0 +1,19 @@
+version: '3'
+services:
+  appserver:
+    build: .
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8090/healthz"]
+  webserver:
+    image: abiosoft/caddy
+    container_name: caddy
+    restart: always
+    ports:
+    - "80:80"
+    - "443:443"
+    links:
+    - appserver
+    depends_on:
+      - appserver
+    volumes:
+    - "./Caddyfile:/etc/Caddyfile"

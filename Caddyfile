@@ -1,0 +1,15 @@
+illuminepixels.io:80 {
+
+    proxy / appserver:8090 {
+        header_upstream Host {host}
+        header_upstream X-Forwarded-For {remote}
+        header_upstream X-Forwarded-Port {port}
+        header_upstream X-Forwarded-Proto {scheme}
+    }
+
+    gzip
+
+    tls rutledgepaulv@gmail.com {
+       ca https://acme-staging.api.letsencrypt.org/directory
+    }
+}
