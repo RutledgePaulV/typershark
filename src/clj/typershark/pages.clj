@@ -29,7 +29,7 @@
        [:label
         [:svg {:class "icon"}
          [:use {"xmlns:xlink" "http://www.w3.org/1999/xlink" "xlink:href" "#user"}]]]
-       [:input.form-input {:type "text" :name "username" :autofocus "autofocus"}]]
+       [:input.form-input {:type "text" :name "username" :autofocus "autofocus" :autocomplete false}]]
       (anti-forgery/anti-forgery-field)]
      [:svg {:xmlns "http://www.w3.org/2000/svg", :class "icons"}
       [:symbol {:id "user", :viewbox "0 0 1792 1792"}
