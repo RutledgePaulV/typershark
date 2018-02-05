@@ -11,9 +11,12 @@ services:
     ports:
     - "80:80"
     - "443:443"
+    cap_add:
+    - NET_BIND_SERVICE
     links:
     - appserver
     depends_on:
       - appserver
     volumes:
     - "./Caddyfile:/etc/Caddyfile"
+    - "./.caddy:/root/.caddy"
