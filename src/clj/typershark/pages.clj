@@ -7,24 +7,29 @@
 (defn index-page []
   (html5
     [:html
-     [:head (include-css "css/styles.css")]
+     [:head
+      [:link {:sizes "32x32", :href "favicon-32x32.png" :type "image/png" :rel "icon"}]
+      [:link {:sizes "16x16" :href "favicon-16x16.png" :type "image/png" :rel "icon"}]
+      (include-css "css/styles.css")]
      [:body (include-js "js/main.js")]]))
 
 (defn login-page []
   (html5
     [:html
      [:head
+      [:link {:sizes "32x32", :href "favicon-32x32.png" :type "image/png" :rel "icon"}]
+      [:link {:sizes "16x16" :href "favicon-16x16.png" :type "image/png" :rel "icon"}]
       (include-css "https://fonts.googleapis.com/css?family=Open+Sans:400,700")
       (include-css "css/login.css")]]
     [:body.align
      [:form.form.login {:action "/login" :method "POST"}
       [:div.form-field
+       [:img.icon {:src "/color.png"}]]
+      [:div.form-field
        [:label
         [:svg {:class "icon"}
-         [:use {"xmlns:xlink" "http://www.w3.org/1999/xlink" "xlink:href" "#user"}]]
-        [:span.hidden "Username"]]
-       [:input.form-input {:type "text" :name "username" :placeholder "Username"}]]
-      [:div.form-field [:input {:type "submit" :value "Join"}]]
+         [:use {"xmlns:xlink" "http://www.w3.org/1999/xlink" "xlink:href" "#user"}]]]
+       [:input.form-input {:type "text" :name "username" :autofocus "autofocus"}]]
       (anti-forgery/anti-forgery-field)]
      [:svg {:xmlns "http://www.w3.org/2000/svg", :class "icons"}
       [:symbol {:id "user", :viewbox "0 0 1792 1792"}

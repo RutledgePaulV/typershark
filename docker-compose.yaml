@@ -2,6 +2,7 @@ version: '3'
 services:
   appserver:
     build: .
+    restart: always
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8090/healthz"]
   webserver:

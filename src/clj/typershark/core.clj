@@ -6,12 +6,13 @@
             [ring.middleware.defaults :as defaults]
             [org.httpkit.server :as server]
             [ring.middleware.json :as rj]
-            [typershark.middleware :as mw]))
+            [typershark.middleware :as mw]
+            [ring.middleware.reload :as reload]))
 
 
 (defn default-mw [handler]
   (defaults/wrap-defaults handler
-    (-> defaults/secure-site-defaults
+    (-> defaults/site-defaults
         (assoc-in [:security :ssl-redirect] false))))
 
 (defn json-mw [handler]
@@ -56,7 +57,7 @@
     authenticated
     (mw/wrap-authentication)))
 
-
+(alter-var-root #'application reload/wrap-reload)
 (alter-var-root #'application default-mw)
 
 (defn -main [& args]
