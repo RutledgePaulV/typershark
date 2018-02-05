@@ -14,7 +14,5 @@ illuminepixels.io {
 
     gzip
 
-    tls rutledgepaulv@gmail.com {
-       ca https://acme-staging.api.letsencrypt.org/directory
-    }
+    tls rutledgepaulv@gmail.com
 }
