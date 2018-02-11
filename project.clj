@@ -41,7 +41,7 @@
      :source-paths ["src/cljs"]
      :compiler     {:optimizations :advanced
                     :main          "typershark.core"
-                    :closure-defines {'typershark.game/BASE_WEBSOCKET
+                    :closure-defines {typershark.game/BASE_WEBSOCKET
                                       "wss://illuminepixels.io"}
                     :output-to     "resources/public/js/main.js"}}]}
 
