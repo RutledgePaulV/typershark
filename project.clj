@@ -11,7 +11,7 @@
                  [com.cemerick/friend "0.2.3"]
                  [reagent "0.8.0-alpha2"]
                  [binaryage/devtools "0.9.9"]
-                 [reagent-utils "0.2.1"]
+                 [reagent-utils "0.3.0"]
                  [cljs-ajax "0.7.3"]
                  [hazard "0.3.0"]
                  [funcool/bide "1.6.0"]
@@ -20,7 +20,8 @@
                  [hiccup "1.0.5"]
                  [digest "1.4.6"]]
 
-  :plugins [[lein-cljsbuild "1.1.7"] [lein-figwheel "0.5.14"]]
+  :plugins [[lein-cljsbuild "1.1.7"]
+            [lein-figwheel "0.5.14"]]
 
   :clean-target ^{:protect false} ["resources/public/js"]
 

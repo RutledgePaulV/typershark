@@ -7,13 +7,40 @@
 
 (goog-define BASE_WEBSOCKET "ws://localhost:8090")
 
+(def STATE (atom {}))
+(def GAME (atom nil))
+
+(def main-screen
+  (reify play/Screen
+
+    (on-show [this]
+      (println "Showing"))
+
+    (on-hide [this]
+      (println "Hiding"))
+
+    (on-render [this]
+      (play/render @GAME []))))
+
+(defn init-screen! []
+  (let [mount  (.getElementById js/document "canvas")
+        width  (quot (.-innerWidth js/window) 2)
+        height (quot (.-innerHeight js/window) 2)
+        game   (play/create-game width height {:parent mount})]
+    (reset! GAME game)
+    (doto game
+      (play/start)
+      (play/set-screen main-screen))))
+
 (defmulti
   handle-event
   (fn [channel event]
     (keyword (:kind event))))
 
 (defmethod handle-event :state-change [channel event]
-  (println "Received state change event!"))
+  (swap! STATE merge (:data event))
+  (when-not @GAME
+    (init-screen!)))
 
 (defmethod handle-event :default [channel event]
   (println "Received unknown event" event))
@@ -34,5 +61,10 @@
     (fn [] (async/put! close {}))))
 
 (defn attach! [game]
-  (let [url (str BASE_WEBSOCKET "/ws?game=" game)]
-    (nav/on-leave! (start-event-loop url))))
+  (let [url   (str BASE_WEBSOCKET "/ws?game=" game)
+        close (start-event-loop url)]
+    (nav/on-leave!
+      (fn []
+        (reset! STATE {})
+        (reset! GAME nil)
+        (close)))))

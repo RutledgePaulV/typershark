@@ -38,11 +38,11 @@
 (defn overlay []
   [:div.overlay.open [:nav.overlay-menu [game-list]]])
 
-(defn game [id]
-  [:div (str "Game " id)])
+(defn canvas []
+  [:div#canvas])
 
 (defn loading []
-  [:div.loading "loading..."])
+  [:div.loading])
 
 (defn four-o-four []
   [:div "Not found."])
@@ -50,17 +50,17 @@
 (defn get-root []
   (.getElementById js/document "application"))
 
-(defn on-load [fun]
+(defn loading-screen [fun]
   (r/render [loading] (get-root) fun))
 
 (defmethod nav/on-navigate :typershark/menu [_ _ _]
-  (on-load #(get-games (fn [] (r/render [overlay] (get-root))))))
+  (loading-screen #(get-games (fn [] (r/render [overlay] (get-root))))))
 
 (defmethod nav/on-navigate :typershark/games [_ {:keys [id]} _]
-  (on-load #(r/render [game id] (get-root) (partial game/attach! id))))
+  (loading-screen #(r/render [canvas] (get-root) (partial game/attach! id))))
 
 (defmethod nav/on-navigate :typershark/not-found [event params query]
-  (on-load #(r/render [four-o-four] (get-root))))
+  (loading-screen #(r/render [four-o-four] (get-root))))
 
 (defmethod nav/on-navigate :typershark/default [event params query]
   (nav/navigate! :typershark/not-found))
