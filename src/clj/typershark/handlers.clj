@@ -19,7 +19,7 @@
 
 (defn add-state-notifications [game-atom]
   (add-watch game-atom "state-changes"
-    (fn [k r o n] (broadcast! {:ping true} (get-channels n)))))
+    (fn [k r o n] #_(broadcast! {:ping true} (get-channels n)))))
 
 (defn spawn-broadcast-loop [game-atom]
   (let [broadcast (async/chan)

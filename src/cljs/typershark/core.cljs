@@ -4,8 +4,6 @@
             [typershark.navigation :as nav]
             [typershark.game :as game]))
 
-(enable-console-print!)
-
 (def *state* (r/atom {:games []}))
 
 (defn GET [uri cb]
@@ -18,12 +16,19 @@
   (let [description (str (get game :key) " (" (get game :users 0) " users)")]
     [:li [:a {:href (str "/games/" (:key game))} description]]))
 
+(defn create-game! [cb]
+  (POST "/api/games" (fn [games] (swap! *state* assoc :games games) (cb (last games)))))
+
+(defn get-games [cb]
+  (GET "/api/games" (fn [games] (swap! *state* merge {:games games}) (cb))))
+
+(defn goto-game [game]
+  (nav/navigate! :typershark/games {:id (:key game)}))
+
 (defn new-game []
   [:a {:style    {:color "black"}
-       :on-click #(POST "/api/games"
-                        (fn [games]
-                          (swap! *state* assoc :games games)
-                          (nav/navigate! :typershark/games {:id (:key (last games))})))} "New Game"])
+       :on-click (partial create-game! goto-game)}
+   "New Game"])
 
 (defn game-list []
   [:ul
@@ -49,10 +54,7 @@
   (r/render [loading] (get-root) fun))
 
 (defmethod nav/on-navigate :typershark/menu [_ _ _]
-  (on-load #(GET "/api/games"
-                 (fn [games]
-                   (swap! *state* merge {:games games})
-                   (r/render [overlay] (get-root))))))
+  (on-load #(get-games (fn [] (r/render [overlay] (get-root))))))
 
 (defmethod nav/on-navigate :typershark/games [_ {:keys [id]} _]
   (on-load #(r/render [game id] (get-root) (partial game/attach! id))))
@@ -63,5 +65,7 @@
 (defmethod nav/on-navigate :typershark/default [event params query]
   (nav/navigate! :typershark/not-found))
 
+
+(enable-console-print!)
 (nav/setup-navigation!)
 

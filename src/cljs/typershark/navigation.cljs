@@ -25,7 +25,7 @@
       (old))
     name))
 
-(defn setup-navigation! []
+(defn get-history []
   (let [history (Html5History.)]
     (events/listen
       js/document "click"
@@ -34,12 +34,14 @@
           (when-not (string/blank? path)
             (.preventDefault e)
             (. history (setToken path (.-title (.-target e))))))))
-    (b/start!
-      router
-      {:default      :typershark/not-found
-       :on-navigate  on-navigate
-       :html5?       true
-       :html5history (constantly history)})))
+    history))
+
+(defn setup-navigation! []
+  (b/start! router
+    {:default      :typershark/not-found
+     :on-navigate  on-navigate
+     :html5?       true
+     :html5history get-history}))
 
 (defn navigate!
   ([destination] (navigate! destination {}))
