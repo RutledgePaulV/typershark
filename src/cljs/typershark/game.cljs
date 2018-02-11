@@ -20,7 +20,8 @@
       (println "Hiding"))
 
     (on-render [this]
-      (play/render @GAME []))))
+      (play/render @GAME
+        []))))
 
 (defn init-screen! []
   (let [mount  (.getElementById js/document "canvas")

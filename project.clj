@@ -4,7 +4,7 @@
                  [org.clojure/clojurescript "1.9.946"]
                  [org.clojure/core.async "0.4.474"]
                  [jarohen/chord "0.8.1"]
-                 [http-kit "2.2.0"]
+                 [http-kit "2.3.0-alpha5"]
                  [ring "1.6.3"]
                  [ring/ring-json "0.4.0"]
                  [ring/ring-defaults "0.3.1"]
@@ -24,6 +24,8 @@
             [lein-figwheel "0.5.14"]]
 
   :clean-target ^{:protect false} ["resources/public/js"]
+
+  :jvm-opts ["-XX:+AlwaysPreTouch" "-Xmx2000m" "-Xms2000m" "--add-modules" "java.xml.bind"]
 
   :source-paths ["src/clj"]
 
