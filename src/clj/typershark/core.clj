@@ -13,7 +13,8 @@
 (defn default-mw [handler]
   (defaults/wrap-defaults handler
     (-> defaults/site-defaults
-        (assoc-in [:security :ssl-redirect] false))))
+        (assoc-in [:security :ssl-redirect] false)
+        (assoc-in [:security :anti-forgery] false))))
 
 (defn json-mw [handler]
   (-> handler (rj/wrap-json-body) (rj/wrap-json-params) (rj/wrap-json-response)))
@@ -21,32 +22,32 @@
 
 (defroutes unauthenticated
 
+  (resources "/static")
+
   (GET "/login" request
     (pages/login-page))
 
   (GET "/healthz" request
     {:body    "{\"healthy\": true}"
-     :headers {"content-type" "application/json"}})
-
-  (resources "/"))
+     :headers {"content-type" "application/json"}}))
 
 
 (defroutes authenticated
-
-  (GET "/" request
-    (pages/index-page))
 
   (GET "/ws" [game :as request]
     (handlers/connect! request game))
 
   (->
     (routes
-      (GET "/games" request
+      (GET "/api/games" request
         {:body (handlers/get-games)})
 
-      (POST "/games" request
+      (POST "/api/games" request
         {:body (handlers/new-game!)}))
-    (json-mw)))
+    (json-mw))
+
+  (GET "/**" request
+    (pages/index-page)))
 
 
 (defroutes application

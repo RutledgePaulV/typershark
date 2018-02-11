@@ -2,33 +2,24 @@
   (:require [chord.http-kit :refer [with-channel]]
             [clojure.core.async :as async]
             [ring.util.response :as response]
-            [cemerick.friend :as friend])
-  (:import (java.util UUID)))
+            [cemerick.friend :as friend]
+            [hazard.core :as hazard]))
 
-(defonce GAMES (atom {}))
+(def GAMES (atom {}))
 
 (defn broadcast! [msg channels]
   (dorun (pmap #(async/put! % msg) channels)))
-
-(defn uuid []
-  (str (UUID/randomUUID)))
 
 (defn get-channels [game]
   (->> (get game :users) (vals) (map :channel)))
 
 (defn front-end-state [n]
-  (let [users (get n :users)]
-    {:users users}))
+  (let [users (get n :users {})]
+    {:users (mapv #(dissoc % :channel) (vals users))}))
 
 (defn add-state-notifications [game-atom]
   (add-watch game-atom "state-changes"
-    (let [counter (atom 0)]
-      (fn [k r o n]
-        (let [event
-              {:kind  :state-change
-               :data  (front-end-state n)
-               :order (swap! counter inc)}]
-          (broadcast! event (get-channels n)))))))
+    (fn [k r o n] (broadcast! {:ping true} (get-channels n)))))
 
 (defn spawn-broadcast-loop [game-atom]
   (let [broadcast (async/chan)
@@ -40,16 +31,28 @@
         (recur (async/<! broadcast))))))
 
 (defn game-descriptor [game]
-  {:id    (get game :id)
-   :users (count (get game :users))})
+  {:key   (get game :key)
+   :users (count (get game :users {}))})
 
 (defn get-games
   ([] (get-games @GAMES))
   ([games] (->> games (vals) (map deref) (mapv game-descriptor))))
 
+(defn unique [f]
+  (let [seen (atom #{})]
+    (fn [& args]
+      (->> (repeatedly #(apply f args))
+           (drop-while #(contains? (first (swap-vals! seen conj %)) %))
+           (first)))))
+
+(defn rand-name []
+  (first (hazard/words 1 {:min 8 :max 8})))
+
+(alter-var-root #'rand-name unique)
+
 (defn new-game! []
-  (let [id   (uuid)
-        game (atom {:id id :users {}})]
+  (let [id   (rand-name)
+        game (atom {:key id :users {}})]
     (spawn-broadcast-loop game)
     (add-state-notifications game)
     (get-games (swap! GAMES assoc id game))))
@@ -61,12 +64,14 @@
   {:kind :state-change :data (front-end-state @game)})
 
 (defmethod handle-user-event :default [game event]
-  (println "Received event for game " (get @game :id))
+  (println "Received event for game" (get @game :key) event)
   {:ack true})
 
 (defn deregister! [game channel]
   (let [sess (hash channel)]
-    (swap! game update :users dissoc sess)))
+    (let [result (swap! game update :users dissoc sess)]
+      (when (empty? (:users result {}))
+        (swap! GAMES dissoc (:key result))))))
 
 (defn register! [game request channel]
   (let [user (friend/current-authentication request) sess (hash channel)]
@@ -78,7 +83,7 @@
       (register! game request channel)
       (async/go-loop []
         (if-some [message (async/<! channel)]
-          (when-some [response (handle-user-event game message)]
+          (when-some [response (handle-user-event game (:message message))]
             (if (fn? response)
               (when-some [resolved (async/<! (async/thread (response)))]
                 (async/>! channel resolved))

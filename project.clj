@@ -10,8 +10,11 @@
                  [ring/ring-defaults "0.3.1"]
                  [com.cemerick/friend "0.2.3"]
                  [reagent "0.8.0-alpha2"]
+                 [binaryage/devtools "0.9.9"]
                  [reagent-utils "0.2.1"]
                  [cljs-ajax "0.7.3"]
+                 [hazard "0.3.0"]
+                 [funcool/bide "1.6.0"]
                  [compojure "1.6.0"]
                  [play-cljs "1.1.0"]
                  [hiccup "1.0.5"]
@@ -29,7 +32,8 @@
      :source-paths ["src/cljs"]
      :figwheel     true
      :compiler     {:main       "typershark.core"
-                    :asset-path "js/out"
+                    :asset-path "/static/js/out"
+                    :preloads   [devtools.preload]
                     :output-to  "resources/public/js/main.js"
                     :output-dir "resources/public/js/out"}}
 

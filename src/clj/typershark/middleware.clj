@@ -30,7 +30,7 @@
             (update-in request [::friend/auth-config] merge form-config)))))))
 
 (defn credential-fn [{:keys [username]}]
-  {:email    username
+  {:identity username
    :gravatar (gravatar username)})
 
 (defn wrap-authentication [handler]
