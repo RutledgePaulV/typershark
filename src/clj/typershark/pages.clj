@@ -10,9 +10,7 @@
       [:link {:sizes "32x32", :href "/static/favicon-32x32.png" :type "image/png" :rel "icon"}]
       [:link {:sizes "16x16" :href "/static/favicon-16x16.png" :type "image/png" :rel "icon"}]
       (include-css "/static/css/styles.css")]
-     [:body
-      [:div#application]
-      (include-js "/static/js/main.js")]]))
+     [:body (include-js "/static/js/main.js")]]))
 
 (defn login-page []
   (html5

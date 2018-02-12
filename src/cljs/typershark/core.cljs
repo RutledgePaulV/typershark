@@ -48,7 +48,7 @@
   [:div "Not found."])
 
 (defn get-root []
-  (.getElementById js/document "application"))
+  (.-body js/document))
 
 (defn loading-screen [fun]
   (r/render [loading] (get-root) fun))

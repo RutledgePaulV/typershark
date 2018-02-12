@@ -24,10 +24,9 @@
         []))))
 
 (defn init-screen! []
-  (let [mount  (.getElementById js/document "canvas")
-        width  (quot (.-innerWidth js/window) 2)
+  (let [width  (quot (.-innerWidth js/window) 2)
         height (quot (.-innerHeight js/window) 2)
-        game   (play/create-game width height {:parent mount})]
+        game   (play/create-game width height)]
     (reset! GAME game)
     (doto game
       (play/start)

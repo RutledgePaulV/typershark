@@ -45,7 +45,6 @@
      :figwheel     true
      :compiler     {:main       "typershark.core"
                     :asset-path "/static/js/out"
-                    :preloads   [devtools.preload]
                     :output-to  "resources/public/js/main.js"
                     :output-dir "resources/public/js/out"}}
 
@@ -53,8 +52,7 @@
      :source-paths ["src/cljs"]
      :compiler     {:optimizations   :advanced
                     :main            "typershark.core"
-                    :closure-defines {typershark.game/BASE_WEBSOCKET
-                                      "wss://illuminepixels.io"}
+                    :closure-defines {}
                     :output-to       "resources/public/js/main.js"}}]}
 
   :main typershark.core)
