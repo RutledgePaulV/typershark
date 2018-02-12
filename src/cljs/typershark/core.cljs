@@ -39,10 +39,10 @@
   [:div.overlay.open [:nav.overlay-menu [game-list]]])
 
 (defn canvas []
-  [:div#canvas])
+  [:div#canvas ""])
 
 (defn loading []
-  [:div.loading])
+  [:div.loading ""])
 
 (defn four-o-four []
   [:div "Not found."])

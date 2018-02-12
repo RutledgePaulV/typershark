@@ -9,9 +9,7 @@
                  [ring/ring-json "0.4.0"]
                  [ring/ring-defaults "0.3.1"]
                  [com.cemerick/friend "0.2.3"]
-                 [reagent "0.8.0-alpha2"]
-                 [binaryage/devtools "0.9.9"]
-                 [reagent-utils "0.3.0"]
+                 [reagent "0.7.0"]
                  [cljs-ajax "0.7.3"]
                  [hazard "0.3.0"]
                  [funcool/bide "1.6.0"]
@@ -23,7 +21,7 @@
   :plugins [[lein-cljsbuild "1.1.7"]
             [lein-figwheel "0.5.14"]]
 
-  :clean-target ^{:protect false} ["resources/public/js"]
+  :clean-targets ^{:protect false} ["resources/public/js"]
 
   :jvm-opts ["-XX:+AlwaysPreTouch" "-Xmx2000m" "-Xms2000m" "--add-modules" "java.xml.bind"]
 
@@ -42,10 +40,10 @@
 
     {:id           "production"
      :source-paths ["src/cljs"]
-     :compiler     {:optimizations :advanced
-                    :main          "typershark.core"
+     :compiler     {:optimizations   :advanced
+                    :main            "typershark.core"
                     :closure-defines {typershark.game/BASE_WEBSOCKET
                                       "wss://illuminepixels.io"}
-                    :output-to     "resources/public/js/main.js"}}]}
+                    :output-to       "resources/public/js/main.js"}}]}
 
   :main typershark.core)
