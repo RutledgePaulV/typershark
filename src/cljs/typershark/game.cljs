@@ -38,7 +38,9 @@
       (let [bounds    (get-boundaries)
             renderer  (play/get-renderer @GAME)
             particles (repeatedly 75 (partial new-particle bounds))]
-        (.blendMode renderer "lighter")
+        (try
+          (.blendMode renderer "lighter")
+          (catch js/Error e (println "Error " e)))
         (swap! STATE assoc :particles particles)))
 
     (on-hide [this]
