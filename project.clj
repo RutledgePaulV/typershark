@@ -19,13 +19,24 @@
                  [digest "1.4.6"]]
 
   :plugins [[lein-cljsbuild "1.1.7"]
-            [lein-figwheel "0.5.14"]]
+            [lein-figwheel "0.5.14"]
+            [lein-asset-minifier "0.4.4"]]
 
   :clean-targets ^{:protect false} ["resources/public/js"]
 
   :jvm-opts ["-XX:+AlwaysPreTouch" "-Xmx2000m" "-Xms2000m" "--add-modules" "java.xml.bind"]
 
   :source-paths ["src/clj"]
+
+  :minify-assets [[:css {:source "resources/public/css/styles.css"
+                         :target "resources/public/css/styles.min.css"
+                         :opts   {:optimizations :advanced}}]
+                  [:css {:source "resources/public/css/login.css"
+                         :target "resources/public/css/login.min.css"
+                         :opts   {:optimizations :advanced}}]
+                  [:js {:source ["resources/public/js/main.js"]
+                        :target "resources/public/js/main.min.js"
+                        :opts   {:optimizations :advanced}}]]
 
   :cljsbuild
   {:builds

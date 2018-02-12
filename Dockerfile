@@ -37,5 +37,16 @@ RUN lein deps
 RUN lein clean
 COPY . /usr/src/app
 RUN lein cljsbuild once production
+RUN lein minify-assets
+
+RUN rm resources/public/css/login.css && \
+    mv resources/public/css/login.min.css resources/public/css/login.css
+
+RUN rm resources/public/css/styles.css && \
+    mv resources/public/css/styles.min.css resources/public/css/styles.css
+
+RUN rm resources/public/js/main.js && \
+    mv resources/public/js/main.min.js resources/public/js/main.js
+
 EXPOSE 8090
 CMD ["lein", "run", "-o"]
